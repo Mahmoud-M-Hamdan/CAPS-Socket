@@ -1,20 +1,33 @@
-'use strict'
+"use strict";
 
-const io = require('socket.io-client');
-const payload = require('./payload')
-/* ------ CONNECT ---------- */
-const host = 'http://localhost:3000';
+require("dotenv").config();
+const PORT = process.env.PORT || 3000;
+const io = require("socket.io-client");
+const host = `http://localhost:${PORT}`;
 const capsConnection = io.connect(`${host}/caps`);
 
-/* ------ Listener ---------- */
-capsConnection.emit("pickup", payload);
+const faker = require("faker");
 
+let payload = {
+  store: faker.company.companyName(),
+  orderId: faker.datatype.uuid(),
+  customer: faker.name.findName(),
+  address: faker.address.streetAddress(),
+};
+
+// cecking for missing delivered messages
+capsConnection.emit("get_all", { event: "delivered" });
+
+// emit order detector event from all events js file
+capsConnection.emit("pickup", payload); // 1
 
 capsConnection.on("delivered", (payload) => {
-  setTimeout(() => {
-    console.log(`VENDOR: Thank you for delivering ${payload.orderID}`);
-  }, 2000);
+  console.log(`VENDOR: Thank you for delivering ${payload.orderId}`);
+  console.log("=====================================");
+  capsConnection.emit("received", {
+    event: "delivered",
+    moduleName: "VENDOR",
+    payload: payload,
+  });
+  capsConnection.emit("delivered", payload);
 });
-
-
-

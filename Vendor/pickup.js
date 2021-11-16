@@ -1,6 +1,5 @@
 "use strict";
 
-
 function pickup(payload) {
   // daclare new date
   let date = new Date();
@@ -8,7 +7,7 @@ function pickup(payload) {
   // declare pick up event object
   let pickupEvent = {
     event: "pickup",
-    time: `${date.getDate()}/ November`,
+    time: `${date.getDate()}/Novmber`,
     payload: payload,
   };
   console.log("EVENT", pickupEvent);
